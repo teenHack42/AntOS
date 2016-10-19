@@ -29,7 +29,7 @@ mboot:
                                 ; 4-byte boundary in your kernel file
     dd  MBOOT_HEADER_FLAGS      ; How GRUB should load your file / settings
     dd  MBOOT_CHECKSUM          ; To ensure that the above values are correct
-    
+
     dd  mboot                   ; Location of this descriptor
     dd  code                    ; Start of kernel '.text' (code) section.
     dd  bss                     ; End of kernel '.data' section.
@@ -37,7 +37,7 @@ mboot:
     dd  start                   ; Kernel entry point (initial EIP).
 
 [GLOBAL start]                  ; Kernel entry point.
-[EXTERN wasp_kernel_main]                   ; This is the entry point of our C code
+[EXTERN ant_kernel_main]                   ; This is the entry point of our C code
 
 ;
 ; THE START OF LIFE!!!
@@ -49,8 +49,7 @@ start:
 
     ; Execute the kernel:
     cli                         ; Disable interrupts.
-    call wasp_kernel_main       ; call our main() function.
+    call ant_kernel_main       ; call our main() function.
     jmp $                       ; Enter an infinite loop, to stop the processor
                                 ; executing whatever rubbish is in the memory
                                 ; after our kernel!
-

@@ -3,7 +3,7 @@
 # WaspOS
 #Makefile for WaspOS
 
-BASE_DIR=~/WaspOS
+BASE_DIR=~/AntOS
 BUILD_DIR=$(BASE_DIR)/build
 
 # LD
@@ -51,7 +51,7 @@ all: $(SOURCES) link
 .PHONY: link
 link:
 	@echo "[*] Linking"
-	$(LD) $(LDFLAGS) -o $(BASE_DIR)/bin/WaspOS.bin boot.o $(filter-out ./boot.o, $(SOURCES)) #$(SUBDIRSRC)
+	$(LD) $(LDFLAGS) -o $(BASE_DIR)/bin/AntOS.bin boot.o $(filter-out ./boot.o, $(SOURCES)) #$(SUBDIRSRC)
 
 .s.o:
 	nasm $(ASFLAGS) $<
