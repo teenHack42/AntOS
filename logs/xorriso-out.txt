@@ -4,7 +4,7 @@ Drive current: -outdev 'stdio:AntOS.iso'
 Media current: stdio file, overwriteable
 Media status : is blank
 Media summary: 0 sessions, 0 data blocks, 0 data,  100g free
-Added to ISO image: directory '/'='/tmp/grub.EFEMhh'
+Added to ISO image: directory '/'='/tmp/grub.lJNmc1'
 xorriso : UPDATE : 896 files added in 1 seconds
 Added to ISO image: directory '/'='/home/grant/AntOS/isodir'
 xorriso : UPDATE : 900 files added in 1 seconds
