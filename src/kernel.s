@@ -7,104 +7,12 @@
 [EXTERN put_char]
 [EXTERN put_string]
 
+
+antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!', 0
+
 ant_kernel_main:
 	push eax
 	call clear_screen
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-	call grant
-
+	mov eax, antos
+	call put_string
 	hlt
-
-grant:
-	mov  eax, 'A'
-	push eax
-	call put_char
-	mov  eax, 'n'
-	push eax
-	call put_char
-	mov  eax, 't'
-	push eax
-	call put_char
-	mov  eax, 'O'
-	push eax
-	call put_char
-	mov  eax, 'S'
-	push eax
-	call put_char
-	ret

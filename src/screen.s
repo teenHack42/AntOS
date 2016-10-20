@@ -3,7 +3,7 @@
 [GLOBAL clear_screen]
 [GLOBAL set_character]
 [GLOBAL put_char]
-[GLOBAL pit_string]
+[GLOBAL put_string]
 
 screen_address	dd	0xB8000
 cursor_x 	dd	0x0
@@ -13,13 +13,36 @@ cursor_x_max	dd	0x50 ;80 characters
 cursor_y_max	dd	0x19 ;25 characters
 
 put_string:
-
+	cmp byte [eax], 0
+	je _end_of_string
+	mov ebx, [eax]
+	push eax
+	push bx
+	call put_char
+	pop eax
+	cmp bx, '\n' ;we need to skip the n in \n so we dont print it....
+	jne _not_newline
+	inc eax	;increment the pointer a second time(or first whatever but 2x...)
+	_not_newline:
+	inc eax	;increment the pntr to the next character
+	loop put_string
+	_end_of_string:
 	ret
 
 put_char:
-	pop eax ;eip for ret
-	pop ecx ;my character
-	push eax ;put eip back on the stack...
+	pop eax 						;eip for ret
+	pop cx 						;my character
+	push eax 						;put eip back on the stack...
+	cmp cx, '\n' 					;check for newline character
+	jne _not_new_line 					; jump if new line
+
+	mov word [cursor_x], 0x0
+	mov eax, [cursor_y]
+	inc eax
+	mov [cursor_y], eax
+	ret
+
+	_not_new_line:
 	call set_character
 	mov eax, [cursor_x]
 	cmp eax, [cursor_x_max]
@@ -28,8 +51,7 @@ put_char:
 	mov [cursor_x], eax
 	ret
 	_newline:
-		mov eax, 0x0
-		mov [cursor_x], eax
+		mov word [cursor_x], 0x0
 		mov eax, [cursor_y]
 		inc eax
 		mov [cursor_y], eax
@@ -47,7 +69,8 @@ set_character:
 	push eax ;so we dont loos all that work
 
 	mov dx, [eax]
-	or cx,dx
+	and cx, 0x00FF ; clear the first bits so we dont mangle the or operation
+	or cx, dx
 
 	pop eax
 	mov word [eax], cx
