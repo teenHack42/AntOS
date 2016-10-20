@@ -11,10 +11,10 @@ LD_SCRIPT=link.ld -arch=i386 -melf_i386
 LDFLAGS=-T$(LD_SCRIPT)
 
 # AS / NASM
-ASFLAGS=-felf32
+ASFLAGS=-felf32 -w+orphan-labels -g
 
 #GCC
-CFLAGS=-I $(BASE_DIR)/include -ffreestanding -m32
+CFLAGS=-I $(BASE_DIR)/include -ffreestanding -m32 -g
 #-nostdlib -nostdinc -g
 
 #C Library

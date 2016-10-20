@@ -1,11 +1,10 @@
 #!/usr/bin/make
 
-BASE=~/WaspOS
-BINNAME=WaspOS.bin
+BASE=~/AntOS
+BINNAME=AntOS.bin
 all:
 	@mkdir -p $(BASE)/isodir/boot/grub
 	@cp $(BASE)/bin/$(BINNAME) $(BASE)/isodir/$(BINNAME)
 #	@cp $(BASE)/initrd/initrd.img       $(BASE)/isodir/initrd
 	@cp $(BASE)/grub/grub.cfg $(BASE)/isodir/boot/grub/grub.cfg
-	@grub-mkrescue -o WaspOS.iso isodir > logs/xorriso-out.txt 2>&1
-
+	@grub-mkrescue -o AntOS.iso isodir > logs/xorriso-out.txt 2>&1
