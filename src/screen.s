@@ -4,13 +4,15 @@
 [GLOBAL set_character]
 [GLOBAL put_char]
 [GLOBAL put_string]
+[GLOBAL text_attribute]
 
 screen_address	dd	0xB8000
 cursor_x 	dd	0x0
 cursor_y	dd	0x0
-colour	db	0x07 ; default cursor colour
+text_attribute	db	0x07 ; default cursor text_attribute
 cursor_x_max	dd	0x50 ;80 characters
 cursor_y_max	dd	0x19 ;25 characters
+
 
 ; put_string: print a null terminated string to screen at current cursor
 ;				eax - pointer to the start of a null terminated string
@@ -72,27 +74,25 @@ set_character:
 	mul ebx
 	mov ebx, [cursor_x]
 	add eax, ebx 					; add x cordinate to that
-	mov ebx, 0x2				;multiply by two because attribute + byte....
+	mov ebx, 0x2				;multiply by two because text_attribute + byte....
 	mul ebx
 	add eax, [screen_address]		;add base address and offset togeather to get pointer.
 	push eax						 ;so we dont loose all that work
 
-	mov bx, [eax]		;get the attribute byte from memory
+	mov bx, [text_attribute]		;get the text_attribute byte from memory
+	shl bx, 8
 	and cx, 0x00FF 		; clear the first bits so we dont mangle the or operation
 	or cx, bx				;add the character and atribute byte togeather
-
 	pop eax			;get our pointer back
-	mov word [eax], cx	;put the character in memory as well as attribute byte
+	mov word [eax], cx	;put the character in memory as well as text_attribute byte
 	ret
 
 ; clear_screen - set whole screen to defined atribute values with null bytes
-;				ax - attribute byte
 ;	destroys: ebx, eax
 clear_screen:
 	mov ebx, [screen_address]
-	shl ax, 8			;shift the attribute accross and null the char bits
 clear_screen_loop:
-	mov word [ebx], ax	;wipe the address
+	mov word [ebx], 0x0000	;wipe the address
 	add dword  ebx, 0x2	;increase the address by 2
 	cmp dword ebx, (0xB8000 + 0xF9E)		;check if we reached the end
 	jbe clear_screen_loop
