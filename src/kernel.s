@@ -11,6 +11,7 @@
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!', 0
 
 ant_kernel_main:
+	mov eax, 0x02
 	push eax
 	call clear_screen
 	mov eax, antos
