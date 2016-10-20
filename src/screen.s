@@ -13,23 +13,19 @@ cursor_y_max	dd	0x19 ;25 characters
 
 put_char:
 	pop ecx
-	call set_character
+	;call set_character
 	ret
 
 set_character:
 	mov eax, [cursor_y] ;y cordinate
 	mov ebx, [cursor_x_max] ; multiply by max line length
-	sti
 	mul ebx
 	mov ebx, [cursor_x]
 	add eax, ebx ; add x cordinate to that
 	mov ebx, 0x2
 	mul ebx
-	sti
 	add eax, [screen_address]
-	sti
 	mov dword [eax], ecx
-	sti
 	ret
 
 ; clear_screen writes zeros to the screen text buffer
