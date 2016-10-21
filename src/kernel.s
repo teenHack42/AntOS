@@ -8,6 +8,8 @@
 [EXTERN put_string]
 [EXTERN text_attribute]
 [EXTERN set_cursor]
+[EXTERN hex_to_char]
+[EXTERN short_hex]
 
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!\n', 0
 antos1 dd	'This text is in another colour\n', 0
@@ -25,5 +27,10 @@ ant_kernel_main:
 	call set_cursor
 	mov byte [text_attribute], 0x0D
 	mov eax, antos2
+	call put_string
+	mov eax, 0x0000
+	call set_cursor
+	mov eax, 0x4
+	call short_hex
 	call put_string
 	hlt

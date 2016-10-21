@@ -6,6 +6,8 @@
 [GLOBAL put_string]
 [GLOBAL text_attribute]
 [GLOBAL set_cursor]
+[GLOBAL hex_to_char]
+[GLOBAL short_hex]
 
 screen_address	dd	0xB8000
 cursor_x 	dd	0x0
@@ -14,14 +16,109 @@ text_attribute	db	0x07 ; default cursor text_attribute
 cursor_x_max	dd	0x50 ;80 characters
 cursor_y_max	dd	0x19 ;25 characters
 
+HexChar:	db "0123456789ABCDEF", 0
+HexString: dd 0x00000000, 0x0, 0x0
+HexStringOut: dd 0x00000000, 0x0, 0x0
+
+short_hex:
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi ;push everything we use so we dont destroy them
+	call hex_to_char
+	mov ebx, eax
+	mov ecx, 0
+	.short_hex:
+	cmp byte [ebx], 0x00
+	je .short_end
+	cmp byte [ebx], 0x30
+	je .count_hex
+	jmp .short_end
+	.count_hex:
+	inc eax
+	inc ebx
+	inc cx
+	jmp .short_hex
+	.short_end:
+
+	and word cx,0x01
+	cmp cx, 0x01
+	jne .even
+	dec eax ; because we want an even number of hex characters
+	.even:
+
+	pop esi
+	pop edi
+	pop edx ; and return all of the stuff we saved
+	pop ecx
+	pop ebx
+	ret
+
+hex_to_char:
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi ;push everything we use so we dont destroy them
+
+	push eax		;save the word
+	mov ebx, HexChar
+	mov ecx, HexString
+	mov dl, 0		;init counter
+	.loop_hex:
+	and eax, 0x0000000F
+	xlat
+	mov [ecx], al
+	inc ecx
+	pop eax
+	shr eax, 4
+	push eax
+	inc dl
+	cmp dl, 0x8
+	jne .loop_hex
+	mov byte [ecx], 0 ;null terminate
+	pop eax ; off so we dont have a memory leak...
+
+	mov eax, HexString
+	mov esi, eax  ; esi points to start of string
+	mov eax, HexStringOut
+	add eax, 0x7
+	mov edi, eax
+	mov ecx, 0x8
+	reverseLoop:
+	mov al, [esi] ; load characters
+	mov [edi], al
+	inc esi       ; adjust pointers
+	dec edi
+	dec cx       ; and loop
+	jnz reverseLoop
+	add edi, 0x9
+	mov byte [edi], 0x0
+
+	pop esi
+	pop edi
+	pop edx ; and return all of the stuff we saved
+	pop ecx
+	pop ebx
+	mov eax, HexStringOut
+	ret
+
+; set_cursor: move the cursor to a desired position
+;		ax - high byte - x position
+;		ax - low byte - y position
+;	destroys: nothing
 set_cursor:
+	push eax
+	push ebx
 	mov word bx, ax
 	and bx, 0x00FF
 	shr eax, 8
 	mov word [cursor_x], ax
 	mov word [cursor_y], bx
+	pop ebx
+	pop eax
 	ret
-
 
 ; put_string: print a null terminated string to screen at current cursor
 ;				eax - pointer to the start of a null terminated string
