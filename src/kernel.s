@@ -34,7 +34,7 @@ ant_kernel_main:
 	mov eax, antos3
 	call put_string
 	mov byte [text_attribute], 0x0C
-	mov eax, 42
+	mov eax, 0
 	call short_hex
 	call put_string
 	hlt

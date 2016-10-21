@@ -49,11 +49,14 @@ short_hex:
 	jmp .short_hex			;go back up and check again cause we not finished
 	.short_end:
 
+	cmp cx, 0x08			;then our value is 0x0
+	je .hex_zero
+
 	and word cx,0x01		;check if its odd or even
 	cmp cx, 0x01
-	jne .even
+	jne .even_end
 	dec eax 				; because we want an even number of hex characters
-	.even:
+	.even_end:
 
 	pop esi
 	pop edi
@@ -62,6 +65,10 @@ short_hex:
 	pop ebx
 	ret
 
+	.hex_zero:
+	sub eax, 2			; give at least 2 zeros
+	jmp .even_end	;go back to the body
+	ret					;to be sure
 
 ; to_hex - convert a value into a string in hex format
 ;			input: eax - value
