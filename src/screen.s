@@ -6,7 +6,7 @@
 [GLOBAL put_string]
 [GLOBAL text_attribute]
 [GLOBAL set_cursor]
-[GLOBAL hex_to_char]
+[GLOBAL to_hex]
 [GLOBAL short_hex]
 
 screen_address	dd	0xB8000
@@ -19,33 +19,40 @@ cursor_y_max	dd	0x19 ;25 characters
 HexChar:	db "0123456789ABCDEF", 0
 HexString: dd 0x00000000, 0x0, 0x0
 HexStringOut: dd 0x00000000, 0x0, 0x0
-
+; short hex - cull leading 0(zeros) from a hex string
+;			input: eax - value to pass to hex_to_char
+;			ouput: eax - pointer to null terminated string
+;			destroys: nothing
 short_hex:
 	push ebx
 	push ecx
 	push edx
 	push edi
 	push esi ;push everything we use so we dont destroy them
-	call hex_to_char
-	mov ebx, eax
-	mov ecx, 0
+
+	call to_hex			;convert the value to a string
+
+	mov ebx, eax				;make a copy of the address
+	mov ecx, 0					;initalise the counter
 	.short_hex:
-	cmp byte [ebx], 0x00
+	cmp byte [ebx], 0x00		;check if null termination
 	je .short_end
-	cmp byte [ebx], 0x30
+
+	cmp byte [ebx], '0'		;check if 0 character
 	je .count_hex
-	jmp .short_end
+	jmp .short_end			;if its none of those then we are finished
+
 	.count_hex:
-	inc eax
-	inc ebx
-	inc cx
-	jmp .short_hex
+	inc eax					;move adress up
+	inc ebx					;move the other adress up
+	inc cx					;inc counter
+	jmp .short_hex			;go back up and check again cause we not finished
 	.short_end:
 
-	and word cx,0x01
+	and word cx,0x01		;check if its odd or even
 	cmp cx, 0x01
 	jne .even
-	dec eax ; because we want an even number of hex characters
+	dec eax 				; because we want an even number of hex characters
 	.even:
 
 	pop esi
@@ -55,53 +62,60 @@ short_hex:
 	pop ebx
 	ret
 
-hex_to_char:
+
+; to_hex - convert a value into a string in hex format
+;			input: eax - value
+;			ouput: eax - pointer to string
+;			destroys: nothing
+to_hex:
 	push ebx
 	push ecx
 	push edx
 	push edi
 	push esi ;push everything we use so we dont destroy them
 
-	push eax		;save the word
+	push eax						;save the word
 	mov ebx, HexChar
 	mov ecx, HexString
-	mov dl, 0		;init counter
+	mov dl, 0						;init counter
 	.loop_hex:
-	and eax, 0x0000000F
-	xlat
-	mov [ecx], al
+	and eax, 0x0000000F		; we only want to have the first nibble (4 bits)
+	xlat							;do the offset into the table
+	mov [ecx], al				;save the character from the table into the memory
 	inc ecx
-	pop eax
-	shr eax, 4
-	push eax
-	inc dl
-	cmp dl, 0x8
+	pop eax						;get our word back
+	shr eax, 4						; shove it along by a nibble
+	push eax						;save it again
+	inc dl						;count some stuff
+	cmp dl, 0x8					;there are only 8 nibbles in 32bits so...
 	jne .loop_hex
-	mov byte [ecx], 0 ;null terminate
-	pop eax ; off so we dont have a memory leak...
+	mov byte [ecx], 0 			;null terminate
+	pop eax 					; off so we dont have a memory leak...
 
-	mov eax, HexString
-	mov esi, eax  ; esi points to start of string
-	mov eax, HexStringOut
-	add eax, 0x7
+	;-------------------------Reverse String------------------------------
+	mov eax, HexString				;The string we are reversing
+	mov esi, eax  						; esi points to start of string
+	mov eax, HexStringOut			;the place the correct string is going
+	add eax, 0x7						; go to the end of the string cause we are going backwards
 	mov edi, eax
-	mov ecx, 0x8
+	mov ecx, 0x8						;string has 8 characters. count down
 	reverseLoop:
-	mov al, [esi] ; load characters
-	mov [edi], al
-	inc esi       ; adjust pointers
+	mov al, [esi] 						; load characters
+	mov [edi], al						;save it into the other string
+	inc esi       							; adjust pointers
 	dec edi
-	dec cx       ; and loop
-	jnz reverseLoop
-	add edi, 0x9
-	mov byte [edi], 0x0
+	dec cx       							; dec loop counter
+	jnz reverseLoop						;jump if not 0
+	add edi, 0x9						;go back to the start of our final string
+	mov byte [edi], 0x0				;null terminate it
 
 	pop esi
 	pop edi
 	pop edx ; and return all of the stuff we saved
 	pop ecx
 	pop ebx
-	mov eax, HexStringOut
+
+	mov eax, HexStringOut			;and output the address to the caller
 	ret
 
 ; set_cursor: move the cursor to a desired position
