@@ -5,6 +5,7 @@
 [GLOBAL put_char]
 [GLOBAL put_string]
 [GLOBAL text_attribute]
+[GLOBAL set_cursor]
 
 screen_address	dd	0xB8000
 cursor_x 	dd	0x0
@@ -12,6 +13,14 @@ cursor_y	dd	0x0
 text_attribute	db	0x07 ; default cursor text_attribute
 cursor_x_max	dd	0x50 ;80 characters
 cursor_y_max	dd	0x19 ;25 characters
+
+set_cursor:
+	mov word bx, ax
+	and bx, 0x00FF
+	shr eax, 8
+	mov word [cursor_x], ax
+	mov word [cursor_y], bx
+	ret
 
 
 ; put_string: print a null terminated string to screen at current cursor
