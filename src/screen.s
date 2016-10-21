@@ -162,7 +162,7 @@ put_string:
 	ret
 
 ; put_char: write a character to the current cursor position and advance the cursor by 1
-;				stack: byte - character to print
+;				stack: word - character to print
 ;	destroys: eax, exc
 put_char:
 	pop eax 						;eip for ret
