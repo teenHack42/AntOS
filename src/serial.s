@@ -50,6 +50,7 @@ read_serial:
 	je .loop_tempty ;loop untill buffer is empty
 
 	mov dx, COM1
+	mov eax, 0
 	in al, dx
 
 	pop ecx
@@ -104,16 +105,12 @@ is_transmit_empty:
 	ret
 
 serial_received:
-	push eax
-	push edx
-	mov dx, COM1 + LINESTATUS
+	mov dx, COM1 + 5
 	in al, dx
-	and dx, 0x01
-	pop edx
-	pop eax
-	pop eax ;eip
-	push dx ;return value
-	push eax ;eip for ret
+	and eax, 0x01
+	pop edx ;eip
+	push ax ;return value
+	push edx ;eip for ret
 	ret
 
 init_serial:
@@ -133,7 +130,7 @@ init_serial:
 	mov al, 0x00
 	out dx, al
 	mov dx, COM1 + 3
-	mov al, 0x9
+	mov al, 0xC
 	out dx, al
 	mov dx, COM1 + 2
 	mov al, 0xC7
@@ -141,6 +138,9 @@ init_serial:
 	mov dx, COM1 + 4
 	mov al, 0x0B
 	out dx, al
+	mov ax, COM1
+	in al, dx
+
 	pop eax
 	pop edx
 	ret
