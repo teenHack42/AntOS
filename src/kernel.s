@@ -15,6 +15,7 @@
 [EXTERN init_serial]
 [EXTERN is_transmit_empty]
 [EXTERN read_serial]
+[EXTERN put_serial]
 
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!\n', 0
 antos1 dd	'This text is in another colour\n', 0
@@ -43,18 +44,6 @@ ant_kernel_main:
 	call short_hex
 	call put_string
 
-	call init_serial
-	mov ax, 'BN'
-	push ax
-	call write_serial
-	mov ax, 'gg'
-	push ax
-	call write_serial
-	push ax
-	mov ax, 'tt'
-	call write_serial
-	push ax
-	call write_serial
-	call read_serial
-	call put_char
+	mov eax, antos2
+	call put_serial
 	hlt

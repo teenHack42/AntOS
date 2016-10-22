@@ -3,6 +3,7 @@
 [GLOBAL is_transmit_empty]
 [GLOBAL write_serial]
 [GLOBAL read_serial]
+[GLOBAL put_serial]
 
 %define COM1 0x3F8
 %define COM2 0x2F8
@@ -17,6 +18,26 @@
 %define LINESTATUS		5
 %define MODEMSTATUS	6
 %define SCRATCHREG		7
+
+; put_serial: print a null terminated string to screen at current cursor
+;				eax - pointer to the start of a null terminated string
+;	destroys: ebx
+put_serial:
+	cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
+	je _end_of_string
+	mov ebx, [eax]			; move the character from memory into ebx
+	push eax				;save eax so we dont loose the pointer of the string
+	push bx				;send the character to the function put_char
+	call write_serial
+	pop eax				;get the pointer from above back because put_char destoryed eax
+	cmp bx, '\n' 				;we need to skip the n in \n so we dont print it....
+	jne _not_newline
+	inc eax					;increment the pointer a second time(or first whatever but 2x...)
+	_not_newline:
+	inc eax					;increment the pntr to the next character
+	loop put_serial			;loop back until we hit a 0 character (end of string)
+	_end_of_string:
+	ret
 
 read_serial:
 	push ebx
