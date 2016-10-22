@@ -49,8 +49,6 @@ read_serial:
 	cmp bx, 0
 	je .loop_tempty ;loop untill buffer is empty
 
-	hlt
-
 	mov dx, COM1
 	in al, dx
 
@@ -62,11 +60,21 @@ read_serial:
 	ret
 
 write_serial:
+	mov edx, 0
+	mov eax, 0
 	pop edx ; eip
 	pop ax	;char
 	push edx ;eip
 	push ebx
 	push ecx
+
+	cmp ax, '\n'
+	jne .not_new_line_serial
+	;It is a new line
+	mov al, 0x0A		;New line charicter from ascii
+	.not_new_line_serial:
+
+	push ax 			;cause itll get mangled
 
 	.loop_tempty:
 	call is_transmit_empty
@@ -74,6 +82,7 @@ write_serial:
 	cmp bx, 0
 	je .loop_tempty ;loop untill buffer is empty
 
+	pop ax ;to un mangle it
 	mov dx, COM1
 	out dx, al
 
@@ -111,25 +120,25 @@ init_serial:
 	push edx
 	push eax
 
-	mov dx, COM1 + INTERUPTENABLE
+	mov dx, COM1 + 1
 	mov al, 0x00
 	out dx, al
-	mov dx, COM1 + LINECTL
+	mov dx, COM1 + 3
 	mov al, 0x80
 	out dx, al
-	mov dx, COM1 + DATAREG
+	mov dx, COM1 + 0
 	mov al, 0x03
 	out dx, al
-	mov dx, COM1 + INTERUPTENABLE
+	mov dx, COM1 + 1
 	mov al, 0x00
 	out dx, al
-	mov dx, COM1 + LINECTL
-	mov al, 0x03
+	mov dx, COM1 + 3
+	mov al, 0x9
 	out dx, al
-	mov dx, COM1 + INTFIFO
+	mov dx, COM1 + 2
 	mov al, 0xC7
 	out dx, al
-	mov dx, COM1 + MODEMCTL
+	mov dx, COM1 + 4
 	mov al, 0x0B
 	out dx, al
 	pop eax
