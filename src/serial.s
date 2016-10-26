@@ -24,19 +24,19 @@
 ;	destroys: ebx
 put_serial:
 	cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
-	je _end_of_string
+	je .end_of_string
 	mov ebx, [eax]			; move the character from memory into ebx
 	push eax				;save eax so we dont loose the pointer of the string
 	push bx				;send the character to the function put_char
 	call write_serial
 	pop eax				;get the pointer from above back because put_char destoryed eax
 	cmp bx, '\n' 				;we need to skip the n in \n so we dont print it....
-	jne _not_newline
+	jne .not_newline
 	inc eax					;increment the pointer a second time(or first whatever but 2x...)
-	_not_newline:
+	.not_newline:
 	inc eax					;increment the pntr to the next character
 	loop put_serial			;loop back until we hit a 0 character (end of string)
-	_end_of_string:
+	.end_of_string:
 	ret
 
 read_serial:

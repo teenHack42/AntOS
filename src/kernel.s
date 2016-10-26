@@ -17,7 +17,8 @@
 [EXTERN read_serial]
 [EXTERN put_serial]
 
-[EXTERN stack_dump]
+[EXTERN init_idt]
+[EXTERN idtp]
 
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!\n', 0
 antos1 dd	'This text is in another colour\n', 0
@@ -27,6 +28,7 @@ antosserial dd	'AntOS\nThis is serial and it can print anything\nHere is a Hex 0
 antosserial1 dd '\nWrite Something Here: ',0
 
 ant_kernel_main:
+	mov ebx, esp	;save the base of the stack
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
 	mov eax, antos
@@ -48,6 +50,12 @@ ant_kernel_main:
 	call short_hex
 	call put_string
 
+	call init_idt
+	;int 49
+	mov eax, 5
+	mov ebx, 0
+	div ebx
+
 	mov eax, antosserial
 	call put_serial
 	mov eax, 43
@@ -59,34 +67,5 @@ ant_kernel_main:
 	mov eax, 0x0807
 	call set_cursor
 
-	jmp .skip
-
-	.read:
-	call read_serial
-	mov eax,0
-	pop ax
-	cmp al, 0
-	je .read
-	push ax
-	call put_char
-	jmp .read
-	mov al, '!'
-	push ax
-	call put_char
-
-	.skip:
-	mov eax, 0xABCDEF12
-	push eax
-	mov eax, 0x3456789A
-	push eax
-	mov eax, 0xA1B2C3D4
-	push eax
-	mov eax, 0x1A2B3C4D
-	push eax
-	mov eax, 0xB1B1B0DD
-	push eax
-	mov eax, 0xB0b0B1E5
-	push eax
-	call stack_dump
 
 	hlt

@@ -8,7 +8,7 @@ BUILD_DIR=$(BASE_DIR)/build
 
 # LD
 LD_SCRIPT=link.ld -arch=i386 -melf_i386
-LDFLAGS=-T$(LD_SCRIPT)
+LDFLAGS=-T$(LD_SCRIPT) -g
 
 # AS / NASM
 ASFLAGS=-felf32 -w+orphan-labels -g
