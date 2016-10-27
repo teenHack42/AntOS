@@ -8,9 +8,9 @@
 [EXTERN init_isr]
 
 init_idt:
-	cli
 	mov ebp, esp		;try this out
 	call InitIDT_C				;In idt_c.c
 								;pop ebp
+	cli
 	lidt [idtp+2]				;ofset 2 bytes into the structure
 	ret

@@ -20,6 +20,8 @@
 [EXTERN init_idt]
 [EXTERN idtp]
 
+[EXTERN init_gdt]
+
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!\n', 0
 antos1 dd	'This text is in another colour\n', 0
 antos2 dd	'This text is in another position.\n', 0
@@ -50,11 +52,13 @@ ant_kernel_main:
 	call short_hex
 	call put_string
 
+	call init_gdt
+
 	call init_idt
 	;int 49
 	mov eax, 5
 	mov ebx, 0
-	div ebx
+	;div ebx
 
 	mov eax, antosserial
 	call put_serial

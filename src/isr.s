@@ -44,7 +44,7 @@ isr_common_stub:
 	push fs
 	push gs
 
-	mov ax, 0x10
+	mov ax, 0x08
 	mov gs, ax
 
 	cld

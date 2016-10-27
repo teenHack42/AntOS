@@ -5,7 +5,7 @@ struct idt_entry {
 	unsigned char always0;     /* This will ALWAYS be set to 0! */
 	unsigned char flags;       /* Set using the above table! */
 	unsigned short base_hi;
-} __attribute__((packed));
+} __attribute__((packed))  __attribute__ ((aligned (8)));
 
 struct idt_pointer {
 	unsigned short limit;
