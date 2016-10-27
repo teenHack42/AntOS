@@ -106,13 +106,13 @@ to_hex:
 	add eax, 0x7						; go to the end of the string cause we are going backwards
 	mov edi, eax
 	mov ecx, 0x8						;string has 8 characters. count down
-	reverseLoop:
+	.reverseLoop:
 	mov al, [esi] 						; load characters
 	mov [edi], al						;save it into the other string
 	inc esi       							; adjust pointers
 	dec edi
 	dec cx       							; dec loop counter
-	jnz reverseLoop						;jump if not 0
+	jnz .reverseLoop						;jump if not 0
 	add edi, 0x9						;go back to the start of our final string
 	mov byte [edi], 0x0				;null terminate it
 
@@ -146,19 +146,19 @@ set_cursor:
 ;	destroys: ebx
 put_string:
 	cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
-	je _end_of_string
+	je .end_of_string
 	mov ebx, [eax]			; move the character from memory into ebx
 	push eax				;save eax so we dont loose the pointer of the string
 	push bx				;send the character to the function put_char
 	call put_char
 	pop eax				;get the pointer from above back because put_char destoryed eax
 	cmp bx, '\n' 				;we need to skip the n in \n so we dont print it....
-	jne _not_newline
+	jne .not_newline
 	inc eax					;increment the pointer a second time(or first whatever but 2x...)
-	_not_newline:
+	.not_newline:
 	inc eax					;increment the pntr to the next character
 	loop put_string			;loop back until we hit a 0 character (end of string)
-	_end_of_string:
+	.end_of_string:
 	ret
 
 ; put_char: write a character to the current cursor position and advance the cursor by 1
@@ -169,7 +169,7 @@ put_char:
 	pop cx 						;my character
 	push eax 						;put eip back on the stack...
 	cmp cx, '\n' 					;check for newline character
-	jne _not_new_line 					; jump if new line
+	jne .not_new_line 					; jump if new line
 
 	mov word [cursor_x], 0x0
 	mov eax, [cursor_y]
@@ -177,15 +177,15 @@ put_char:
 	mov [cursor_y], eax
 	ret
 
-	_not_new_line:
+	.not_new_line:
 	call set_character
 	mov eax, [cursor_x]
 	cmp eax, [cursor_x_max]
-	je _newline
+	je .newline
 	inc eax
 	mov [cursor_x], eax
 	ret
-	_newline:
+	.newline:
 		mov word [cursor_x], 0x0
 		mov eax, [cursor_y]
 		inc eax
@@ -218,9 +218,9 @@ set_character:
 ;	destroys: ebx, eax
 clear_screen:
 	mov ebx, [screen_address]
-clear_screen_loop:
+	.clear_screen_loop:
 	mov word [ebx], 0x0000	;wipe the address
 	add dword  ebx, 0x2	;increase the address by 2
 	cmp dword ebx, (0xB8000 + 0xF9E)		;check if we reached the end
-	jbe clear_screen_loop
+	jbe .clear_screen_loop
 	ret
