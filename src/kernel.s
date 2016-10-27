@@ -22,6 +22,8 @@
 
 [EXTERN init_gdt]
 
+[EXTERN init_paging]
+
 antos	dd	'AntOS\nThis is AntOS the fully x86 nasm assembly OS!\nMore new Lines!!!!\n', 0
 antos1 dd	'This text is in another colour\n', 0
 antos2 dd	'This text is in another position.\n', 0
@@ -33,6 +35,9 @@ ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
+
+	call init_paging
+
 	mov eax, antos
 	call put_string
 	mov byte [text_attribute], 0x7A
