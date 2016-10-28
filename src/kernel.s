@@ -39,4 +39,8 @@ ant_kernel_main:
 	mov ax, 0x28	;tss
 	ltr ax			;load the tss
 
+	mov ax, 0x0404
+	call set_cursor
+	mov byte [text_attribute], 0x77
+
 	hlt

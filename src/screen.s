@@ -109,9 +109,9 @@ to_hex:
 	.reverseLoop:
 	mov al, [esi] 						; load characters
 	mov [edi], al						;save it into the other string
-	inc esi       							; adjust pointers
+	inc esi	   							; adjust pointers
 	dec edi
-	dec cx       							; dec loop counter
+	dec cx	   							; dec loop counter
 	jnz .reverseLoop						;jump if not 0
 	add edi, 0x9						;go back to the start of our final string
 	mov byte [edi], 0x0				;null terminate it
@@ -137,9 +137,62 @@ set_cursor:
 	shr eax, 8
 	mov word [cursor_x], ax
 	mov word [cursor_y], bx
+	mov bl, bl
+	mov bh, al
+	call set_textmode_cursor
 	pop ebx
 	pop eax
 	ret
+
+	; Set cursor position (text mode 80x25)
+	; @param BL The row on screen, starts from 0
+	; @param BH The column on screen, starts from 0
+	;=============================================================================
+set_textmode_cursor:
+	pushf
+	push eax
+	push ebx
+	push ecx
+	push edx
+
+	;unsigned short position = (row*80) + col;
+	;AX will contain 'position'
+	mov ax,bx
+	and ax,0ffh			 ;set AX to 'row'
+	mov cl,80
+	mul cl				  ;row*80
+
+	mov cx,bx
+	shr cx,8				;set CX to 'col'
+	add ax,cx			   ;+ col
+	mov cx,ax			   ;store 'position' in CX
+
+	;cursor LOW port to vga INDEX register
+	mov al,0fh
+	mov dx,3d4h			 ;VGA port 3D4h
+	out dx,al
+
+	mov ax,cx			   ;restore 'postion' back to AX
+	mov dx,3d5h			 ;VGA port 3D5h
+	out dx,al			   ;send to VGA hardware
+
+	;cursor HIGH port to vga INDEX register
+	mov al,0eh
+	mov dx,3d4h			 ;VGA port 3D4h
+	out dx,al
+
+	mov ax,cx			   ;restore 'position' back to AX
+	shr ax,8				;get high byte in 'position'
+	mov dx,3d5h			 ;VGA port 3D5h
+	out dx,al			   ;send to VGA hardware
+
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	popf
+	ret
+
 
 ; put_string: print a null terminated string to screen at current cursor
 ;				eax - pointer to the start of a null terminated string
