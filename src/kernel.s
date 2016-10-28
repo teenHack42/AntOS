@@ -24,6 +24,8 @@
 
 [EXTERN init_paging]
 
+[EXTERN init_pic]
+
 antos	dd	'AntOS\n', 0
 antosserial dd	'AntOS\nThis is serial and it can print anything\nHere is a Hex 0x',0
 
@@ -39,8 +41,16 @@ ant_kernel_main:
 	mov ax, 0x28	;tss
 	ltr ax			;load the tss
 
+	call init_pic
+
+	call init_idt
+	mov eax, 9
+	mov ebx, 0
+	;div ebx
+	int 49
+
 	mov ax, 0x0404
-	call set_cursor
+	;call set_cursor
 	mov byte [text_attribute], 0x77
 
 	hlt

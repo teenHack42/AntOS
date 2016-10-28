@@ -27,6 +27,7 @@ isg:
 ;  0: Divide By Zero Exception
 isr0:
 	cli
+	hlt
 	push byte 0	; Dummy error code for uniformity
 	push byte 0
 	jmp isr_common_stub
