@@ -8,7 +8,7 @@ align 4096				;and again
 kernel_table times 1024*4 db 0
 
 init_directory:
-	mov eax, 1024
+	mov eax, 5
 	mov ebx, page_dir
 	.init_directory:
 	mov dword [ebx], 0x00000002	;not present
@@ -21,7 +21,7 @@ init_directory:
 enable_paging:
 	mov eax, page_dir
 	mov cr3, eax
-	
+
 	mov eax, cr0
 	or eax, 0x80000000
 	mov cr0, eax
@@ -36,15 +36,21 @@ init_kernel_table:
 	mul ecx
 	or eax, 0x3
 	mov dword [ebx], eax
-	add ebx, 4
+	add ebx, 4		;increment the pointer to the next index
 	pop eax		;and bring it back
 	inc eax
 	cmp eax, 1024
 	jne .init_kernel_table
 	mov eax, kernel_table
 	or ax, 0x03	;present, read/write
-	mov [page_dir], eax
+	mov [page_dir], eax	;and put the table in the global directory
 	ret
+
+	;example
+	;	mov ecx,0x1000*184	;4K boundary of video memory
+	;	or ecx, 0x03
+	;	mov [kernel_table + 8], ecx	;map it to 0x2000....
+	;	mov dword[0x2000], '::))'		;smily face at first address....
 
 init_paging:
 	call init_directory
