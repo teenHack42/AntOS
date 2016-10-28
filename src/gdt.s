@@ -4,23 +4,26 @@
 
 %define SIZEOFGDT 8*8
 
+align 32
 gdt 	times SIZEOFGDT	db 0x00
 gdtr dw 0
 		dd 0		;limit, base
 
+kernel_tss times 0x68 db 0x00 	;tss structure is 0x68 long
+
 init_gdt:
 	cli			;disable interupts
-	call fill_gdt
 
 	mov eax, gdt
 	mov [gdtr+2], eax		;mov the gdt address to 2bytes in
 	mov ax, SIZEOFGDT
 	mov [gdtr], ax
+
+	call fill_gdt
+
 	lgdt [gdtr]
-	hlt
-	jmp 0x08:reloadCS
-	reloadCS:
-	hlt
+	jmp 0x08:.rlcs
+	.rlcs:
 	mov ax, 0x10
 	mov ds, ax
 	mov es, ax
@@ -37,14 +40,14 @@ fill_gdt:
 	call fill_gdt_sector
 
 	mov eax, 0x0		;linear address from 0 - above the kernel
-	mov ebx, 0x400			;200 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear) TODO use the 'end' located in link.ld to calculate the size of the kernel
+	mov ebx, 0x400			;400 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear) TODO use the 'end' located in link.ld to calculate the size of the kernel
 	mov ecx, 0x0
 	or ecx, 0x9C			;data dpl0
 	mov edx, 1				;second
 	call fill_gdt_sector
 
 	mov eax, 0x0		;linear address up to 0xc8000
-	mov ebx, 0x400			;200 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear)
+	mov ebx, 0x400			;400 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear)
 	mov ecx, 0x0
 	or ecx, 0x92				;data dpl0
 	mov edx, 2
@@ -62,6 +65,13 @@ fill_gdt:
 	mov ecx, 0x0
 	or ecx, 0xF2				;data dpl3
 	mov edx, 4
+	call fill_gdt_sector
+
+	mov eax, kernel_tss			;user data from 4MB - 1024MB
+	mov ebx, 0x1					;less than 4k in size
+	mov ecx, 0x0
+	or ecx, 0x89				;TSS
+	mov edx, 5
 	call fill_gdt_sector
 	ret
 

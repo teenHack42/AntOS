@@ -59,6 +59,10 @@ ant_kernel_main:
 
 	call init_gdt
 
+	mov ax, 0x28	;tss
+	ltr ax			;load the tss
+	hlt
+
 	call init_idt
 	;int 49
 	mov eax, 5
