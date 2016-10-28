@@ -2,6 +2,8 @@
 
 [GLOBAL init_gdt]
 
+[EXTERN put_string]
+
 %define SIZEOFGDT 8*8
 
 align 32
@@ -11,7 +13,12 @@ gdtr dw 0
 
 kernel_tss times 0x68 db 0x00 	;tss structure is 0x68 long
 
+gdt_init_msg db '[GDT]    Initalising: ',0
+gdt_init_msg_done db 'Done!\n',0
+
 init_gdt:
+	mov eax, gdt_init_msg
+	call put_string
 	cli			;disable interupts
 
 	mov eax, gdt
@@ -30,6 +37,8 @@ init_gdt:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+	mov eax, gdt_init_msg_done
+	call put_string
 	ret
 
 fill_gdt:

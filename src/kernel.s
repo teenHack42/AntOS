@@ -31,13 +31,12 @@ ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
+	mov eax, antos
+	call put_string
 
 	call init_paging		;start this early
 	call init_gdt			;then this
 	mov ax, 0x28	;tss
 	ltr ax			;load the tss
-
-	mov eax, antos
-	call put_string
 
 	hlt

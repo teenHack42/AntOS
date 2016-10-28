@@ -126,8 +126,8 @@ to_hex:
 	ret
 
 ; set_cursor: move the cursor to a desired position
-;		ax - high byte - x position
-;		ax - low byte - y position
+;		ah - high byte - x position
+;		al - low byte - y position
 ;	destroys: nothing
 set_cursor:
 	push eax

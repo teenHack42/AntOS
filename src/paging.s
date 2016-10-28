@@ -7,6 +7,9 @@ page_dir times 1024*4 db 0	;reserve directory
 align 4096				;and again
 kernel_table times 1024*4 db 0
 
+paging_init_msg db '[PAGING] Initalising: ',0
+paging_init_msg_done db 'Done!\n',0
+
 init_directory:
 	mov eax, 5
 	mov ebx, page_dir
@@ -52,8 +55,14 @@ init_kernel_table:
 	;	mov [kernel_table + 8], ecx	;map it to 0x2000....
 	;	mov dword[0x2000], '::))'		;smily face at first address....
 
+[EXTERN put_string]
+
 init_paging:
+	mov eax, paging_init_msg
+	call put_string
 	call init_directory
 	call init_kernel_table
 	call enable_paging
+	mov eax, paging_init_msg_done
+	call put_string
 	ret
