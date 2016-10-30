@@ -43,11 +43,29 @@ ant_kernel_main:
 
 	call init_pic
 
+;	mov eax, 0x41
+;	push eax
+;	mov eax, 0x42
+;	push eax
+;	mov eax, 0x43
+;	push eax
+;	mov eax, 0x44
+;	push eax
+;	mov eax, 0x45
+;	push eax
+
+;	pushad
+
+
 	call init_idt
-	mov eax, 9
-	mov ebx, 0
-	;div ebx
-	int 49
+	mov eax, 0x12345678
+	mov ebx, 0xABCDEF01
+	mov ecx, 0xA1B2C3D4
+	mov edx, 0x0
+	div edx
+	;int 49
+
+	hlt
 
 	mov ax, 0x0404
 	;call set_cursor
