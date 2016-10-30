@@ -19,8 +19,8 @@ int_smile:
 ;  0: Divide By Zero Exception
 isr0:
 	cli
-	push byte 0x32	; Dummy error code for uniformity
-	push byte 0x33
+	push byte 0x0	; Dummy error code for uniformity
+	push byte 0x0
 	jmp isr_common_stub
 
 isr1:
@@ -61,6 +61,7 @@ isr_common_stub:
 
 	add esp, 8		;get rid of the arguments from the orriginal call
 
+	sti
 	iretd		   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
 	hlt			;if that fails
 
@@ -73,6 +74,9 @@ dumpmsg4 db	'  DX: 0x',0
 dumpmsg5 db	'\nESI: 0x',0
 dumpmsg6 db	'  EDI: 0x',0
 dumpmsg7 db	'\nDS: 0x',0
+
+isr0div0 db 'Divide By 0 ERROR\n', 0
+isr1err2	db 'Some other error\n', 0
 
 nl db '\n',0
 space db ': 0x',0
@@ -90,9 +94,19 @@ error_out:
 [EXTERN text_attribute]
 [EXTERN to_hex]
 
+fault_pntr_table dd	isr0div0, isr1err2, 0
+
 fault_handler:
 
 	mov byte [text_attribute], 0x40
+
+	mov eax, [esp+(0x9*4)]
+	mov ebx, 4
+	mul ebx
+	add eax, fault_pntr_table
+
+	mov eax, [eax]
+	call error_out
 
 	mov eax, dumpmsg
 	call error_out
