@@ -14,11 +14,3 @@ struct idt_pointer {
 
 extern struct idt_entry idt[256];
 //struct idt_pointer idtp;
-
-extern void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags);
-
-extern void isr0();
-extern void isr1();
-extern void int_smile();
-
-extern void *memset(void *str, int c, unsigned int n);

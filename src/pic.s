@@ -7,6 +7,11 @@
 %define SLAVEC		0x00A0
 %define SLAVED		0x00A1
 
+[EXTERN put_string]
+
+init_pic_msg db	'[PIC]    Initalising: ',0
+init_pic_done db 'Done!\n',0
+
 pic_wait:
 	push eax
 	mov eax, 0xF00000
@@ -21,6 +26,9 @@ pic_wait:
 
 
 init_pic:
+	mov eax, init_pic_msg
+	call put_string
+
 	mov eax, 0
 	in al, MASTERD		;mask
 	push ax				;master mask
@@ -55,5 +63,8 @@ init_pic:
 	out SLAVED, al
 	pop ax			;master mask
 	out MASTERD, al
+
+	mov eax, init_pic_done
+	call put_string
 
 	ret

@@ -3,8 +3,13 @@
 [GLOBAL init_idt]
 [GLOBAL idt_memset]
 [GLOBAL idt]
+[GLOBAL idt_set_gate]
 [EXTERN InitIDT_C]
 [EXTERN init_isr]
+[EXTERN put_string]
+
+init_idt_msg db	'[IDT]    Initalising: ',0
+init_idt_done db 'Done!\n',0
 
 idtp:	dw	0x0	;Limit
 	dd	0x0		;Base
@@ -12,22 +17,10 @@ idtp:	dw	0x0	;Limit
 align 4096
 idt:	times	8*256 db	0x0	;clear a struct for the idt
 
-[EXTERN isr0]
-[EXTERN isr1]
-[EXTERN int_smile]
+[EXTERN fill_isr]
 
 fill_idt:
-	mov eax, 0
-	mov ebx, isr0
-	mov ecx, 0x0008
-	mov edx, 0x8E
-	call idt_set_gate
-
-	mov eax, 1
-	mov ebx, isr1
-	mov ecx, 0x0008
-	mov edx, 0x8E
-	call idt_set_gate
+	call fill_isr
 
 	ret
 
@@ -50,7 +43,10 @@ idt_set_gate:
 	ret
 
 init_idt:
-	mov ebp, esp		;try this out
+	mov ebp, esp		;try this out(WHAT DOES THIS DOO?)
+
+	mov eax, init_idt_msg
+	call put_string
 
 	mov eax, idtp
 	mov word [eax], 0x7FF		;length is (8*256) -1
@@ -60,4 +56,8 @@ init_idt:
 
 	cli
 	lidt [idtp]
+
+	mov eax, init_idt_done
+	call put_string
+
 	ret
