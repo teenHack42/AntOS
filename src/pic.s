@@ -18,6 +18,14 @@ pic_wait:
 	.pic_wait:
 	nop
 	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
 	dec eax
 	cmp eax, 0
 	jnz .pic_wait
@@ -26,6 +34,11 @@ pic_wait:
 
 
 init_pic:
+	push eax
+	push ebx
+	push ecx
+	push edx
+
 	mov eax, init_pic_msg
 	call put_string
 
@@ -37,24 +50,30 @@ init_pic:
 
 	mov al, 0x11			;init command
 	out MASTERC, al
-	call pic_wait			;TODO create an io_wait command of the timer....
+	call pic_wait
+				;TODO create an io_wait command of the timer....
 	out SLAVEC, al
 	call pic_wait
+
 	mov eax, 0x20		;master offset
-	out MASTERD, eax
+	out MASTERD, al
 	call pic_wait
+
 	mov eax, 0x28		;slave offset
-	out SLAVED, eax
+	out SLAVED, al
 	call pic_wait
+
 	mov al, 4
 	out MASTERD, al
 	call pic_wait
+
 	mov al, 2
 	out SLAVED, al
 	call pic_wait
 
 	mov al, 0x01
 	out MASTERD, al
+
 	call pic_wait
 	out SLAVED, al
 	call pic_wait
@@ -67,4 +86,8 @@ init_pic:
 	mov eax, init_pic_done
 	call put_string
 
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
