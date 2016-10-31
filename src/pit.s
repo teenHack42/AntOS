@@ -5,12 +5,18 @@
 [GLOBAL PIT_Handler]
 [EXTERN system_timer_fractions]
 [EXTERN system_timer_ms]
+[EXTERN system_sleep]
 [EXTERN put_serial]
+[EXTERN to_hex]
+[EXTERN put_string]
 
 IRQ0_frequency dd 0x0
 PIT_reload_value dd 0x0
 IRQ0_fractions dd 0x0
 IRQ0_ms dd 0x0
+
+init_pit_msg db '[PIT]    Initalising: ',0
+init_pit_done db 'Done!\n',0
 
 
 PIT_Handler:
@@ -21,6 +27,11 @@ PIT_Handler:
 	mov ebx, [IRQ0_ms]						  ; eax.ebx = amount of time between IRQs
 	add [system_timer_fractions], eax	  ; Update system timer tick fractions
 	adc [system_timer_ms], ebx				; Update system timer tick milli-seconds
+
+	mov ebx, [IRQ0_ms]						  ; eax.ebx = amount of time between IRQs
+	mov eax, [system_sleep]
+	add eax, ebx				;add how long in milliseconds...
+	mov [system_sleep], eax
 
 	mov al, 0x20
 	out 0x20, al								  ; Send the EOI to the PIC
@@ -34,6 +45,10 @@ PIT_Handler:
 ; ebx	Desired PIT frequency in Hz
 init_pit:
 	pushad
+	push ebx
+	mov eax, init_pit_msg
+	call put_string
+	pop ebx
 
 	; Do some checking
 
@@ -122,6 +137,12 @@ init_pit:
 	out 0x40,al							  ;Set high byte of PIT reload value
 
 	popfd
+
+
+	mov eax, init_pit_done
+	call put_string
+
+	sti
 
 	popad
 	ret

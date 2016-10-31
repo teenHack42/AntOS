@@ -28,8 +28,10 @@
 
 [EXTERN init_pit]
 
+[EXTERN sleep]
+
 antos	dd	'AntOS\n', 0
-antosserial dd	'AntOS\nThis is serial and it can print anything\nHere is a Hex 0x',0
+sleepstr dd	'This string was printed after 2000 ms\n', 0
 
 ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
@@ -43,9 +45,16 @@ ant_kernel_main:
 
 	call init_paging		;start this early
 	call init_gdt			;then this
-
+	mov ebx, 150	;Frequency of PIT
 	call init_pit
-	sti
+
+	mov eax, 2000
+	push eax
+	call sleep
+
+	mov eax, sleepstr
+	call put_string
+
 	.kloop:
 	nop
 	jmp .kloop
