@@ -26,6 +26,8 @@
 
 [EXTERN init_pic]
 
+[EXTERN init_pit]
+
 antos	dd	'AntOS\n', 0
 antosserial dd	'AntOS\nThis is serial and it can print anything\nHere is a Hex 0x',0
 
@@ -41,7 +43,10 @@ ant_kernel_main:
 
 	call init_paging		;start this early
 	call init_gdt			;then this
-	mov ax, 0x28	;tss
-	ltr ax			;load the tss
 
+	call init_pit
+	sti
+	.kloop:
+	nop
+	jmp .kloop
 	hlt

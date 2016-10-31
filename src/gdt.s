@@ -16,7 +16,17 @@ kernel_tss times 0x68 db 0x00 	;tss structure is 0x68 long
 gdt_init_msg db '[GDT]    Initalising: ',0
 gdt_init_msg_done db 'Done!\n',0
 
+load_tss:
+
+	mov ax, 0x28	;tss
+	ltr ax			;load the tss
+	ret
+
 init_gdt:
+	push eax
+	push ebx
+	push ecx
+	push edx
 	mov eax, gdt_init_msg
 	call put_string
 	cli			;disable interupts
@@ -37,8 +47,16 @@ init_gdt:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
+
+	call load_tss
+
 	mov eax, gdt_init_msg_done
 	call put_string
+
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
 
 fill_gdt:

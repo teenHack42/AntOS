@@ -29,7 +29,14 @@
 [GLOBAL isr18]
 [GLOBAL isr19]
 
+IntCounter dd 0x0		;count if an interupt caused another interupt
+
+init_isr_msg db '[ISR] ' ,0
+
 fill_isr:
+	mov eax, init_isr_msg
+	call put_string
+
 	mov eax, 0
 	mov ebx, isr0
 	mov ecx, 0x0008
@@ -336,6 +343,10 @@ error_out:
 
 fault_handler:
 
+	mov eax, [IntCounter]
+	inc eax
+	mov [IntCounter], eax
+
 	mov byte [text_attribute], 0x40
 
 	mov eax, [esp+(0x9*4)]
@@ -449,5 +460,13 @@ fault_handler:
 	jle .loopf
 	.end_stack_dump:
 
+	cmp dword [IntCounter], 12
+	je .count
+
+	mov eax, [IntCounter]
+	dec eax
+	mov [IntCounter], eax
+
 	ret
+	.count:
 	hlt

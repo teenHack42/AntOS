@@ -58,6 +58,11 @@ init_kernel_table:
 [EXTERN put_string]
 
 init_paging:
+	push eax
+	push ebx
+	push ecx
+	push edx
+
 	mov eax, paging_init_msg
 	call put_string
 	call init_directory
@@ -65,4 +70,9 @@ init_paging:
 	call enable_paging
 	mov eax, paging_init_msg_done
 	call put_string
+
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret

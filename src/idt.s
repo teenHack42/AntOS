@@ -7,6 +7,7 @@
 [EXTERN InitIDT_C]
 [EXTERN init_isr]
 [EXTERN put_string]
+[EXTERN fill_irq]
 
 init_idt_msg db	'[IDT]    Initalising: ',0
 init_idt_done db 'Done!\n',0
@@ -21,7 +22,7 @@ idt:	times	8*256 db	0x0	;clear a struct for the idt
 
 fill_idt:
 	call fill_isr
-
+	call fill_irq
 	ret
 
 idt_set_gate:
@@ -43,6 +44,11 @@ idt_set_gate:
 	ret
 
 init_idt:
+	push eax
+	push ebx
+	push ecx
+	push edx
+
 	mov ebp, esp		;try this out(WHAT DOES THIS DOO?)
 
 	mov eax, init_idt_msg
@@ -60,4 +66,8 @@ init_idt:
 	mov eax, init_idt_done
 	call put_string
 
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
