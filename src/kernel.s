@@ -32,8 +32,9 @@
 
 [EXTERN init_keyboard]
 
+[EXTERN i8042_getScancode]
+
 antos	dd	'AntOS\n', 0
-sleepstr dd	'This string was printed after 2000 ms\n', 0
 
 ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
@@ -47,13 +48,19 @@ ant_kernel_main:
 
 	call init_paging		;start this early
 	call init_gdt			;then this
-	mov ebx, 150	;Frequency of PIT
+	mov ebx, 100	;Frequency of PIT
 	call init_pit
 
 	call init_keyboard
 	sti
+	int 0x21
 
 	.kloop:
-	nop
+	mov eax, 0
+	mov ebx, 0
+	mov ecx, 0
+	mov edx, 0
+	mov edi, 0
+	mov esi, 0
 	jmp .kloop
 	hlt
