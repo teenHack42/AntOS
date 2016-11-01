@@ -30,6 +30,8 @@
 
 [EXTERN sleep]
 
+[EXTERN init_keyboard]
+
 antos	dd	'AntOS\n', 0
 sleepstr dd	'This string was printed after 2000 ms\n', 0
 
@@ -48,12 +50,8 @@ ant_kernel_main:
 	mov ebx, 150	;Frequency of PIT
 	call init_pit
 
-	mov eax, 2000
-	push eax
-	call sleep
-
-	mov eax, sleepstr
-	call put_string
+	call init_keyboard
+	sti
 
 	.kloop:
 	nop
