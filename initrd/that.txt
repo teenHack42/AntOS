@@ -1,5 +1,0 @@
-This is a file that has not much
-but a few
-lines
-of text
-just so that we can test all of this jazz
