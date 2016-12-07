@@ -1,0 +1,2 @@
+name:AntOS InitRD
+file:mkinitrd.py /bin/initrd.py
