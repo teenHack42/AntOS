@@ -20,6 +20,7 @@ init_pit_done db 'Done!\n',0
 
 
 PIT_Handler:
+	cli
 	push eax
 	push ebx
 
@@ -137,6 +138,10 @@ init_pit:
 	out 0x40,al							  ;Set high byte of PIT reload value
 
 	popfd
+
+	mov eax, 0
+	mov al, 0xFC			;unmask only the timer and keybaord so there arnt any funny interupts
+	out 0x21, al			;output new mask
 
 
 	mov eax, init_pit_done
