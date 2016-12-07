@@ -1,3 +1,6 @@
 name:AntOS InitRD
 file:that.txt /this.txt
 file:wow.griff /griff/wow
+file:AntOS.conf /conf/AntOS.conf
+file:mkinitrd.py /bin/initrd.py
+file:funnyfile.nope
