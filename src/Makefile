@@ -21,8 +21,8 @@ CFLAGS=-I $(BASE_DIR)/include -ffreestanding -m32 -g
 CLIB_PREFIX=~/opt/cross/bin
 #CC=i686-elf-gcc
 #LD=i686-elf-ld
-CC=gcc
-LD=ld
+CC=i686-elf-gcc
+LD=i686-elf-ld
 
 # Directory
 DIRECTORY := $(sort $(dir $(wildcard ./*/)))
@@ -51,6 +51,7 @@ all: $(SOURCES) link
 .PHONY: link
 link:
 	@echo "[*] Linking"
+	mkdir -p $(BASE_DIR)/bin
 	$(LD) $(LDFLAGS) -o $(BASE_DIR)/bin/AntOS.bin boot.o $(filter-out ./boot.o, $(SOURCES)) #$(SUBDIRSRC)
 
 .s.o:
