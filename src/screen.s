@@ -4,6 +4,7 @@
 [GLOBAL set_character]
 [GLOBAL put_char]
 [GLOBAL put_string]
+[GLOBAL put_stringf]
 [GLOBAL text_attribute]
 [GLOBAL set_cursor]
 [GLOBAL to_hex]
@@ -193,6 +194,34 @@ set_textmode_cursor:
 	popf
 	ret
 
+
+; put_stringf: print a null terminated string to screen at current cursor
+;				stack 1 - pointer to string
+;	destroys: ebx
+put_stringf:
+	push ebp
+	mov ebp, esp
+
+	mov eax, [ebp+0x8]
+
+	.put_string:
+	cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
+	je .end_of_string
+	mov ebx, [eax]			; move the character from memory into ebx
+	push eax				;save eax so we dont loose the pointer of the string
+	push bx				;send the character to the function put_char
+	call put_char
+	pop eax				;get the pointer from above back because put_char destoryed eax
+	cmp bx, '\n' 				;we need to skip the n in \n so we dont print it....
+	jne .not_newline
+	inc eax					;increment the pointer a second time(or first whatever but 2x...)
+	.not_newline:
+	inc eax					;increment the pntr to the next character
+	loop .put_string			;loop back until we hit a 0 character (end of string)
+	.end_of_string:
+
+	pop ebp
+	ret
 
 ; put_string: print a null terminated string to screen at current cursor
 ;				eax - pointer to the start of a null terminated string
