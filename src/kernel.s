@@ -30,6 +30,10 @@
 
 [EXTERN sleep]
 
+[EXTERN fault_handler]
+
+[EXTERN init_multiboot]
+
 antos	dd	'AntOS\n', 0
 sleepstr dd	'This string was printed after 2000 ms\n', 0
 
@@ -48,12 +52,24 @@ ant_kernel_main:
 	mov ebx, 150	;Frequency of PIT
 	call init_pit
 
-	mov eax, 2000
+	mov eax, 700
 	push eax
 	call sleep
 
 	mov eax, sleepstr
 	call put_string
+
+
+	call fault_handler
+
+	pop eax
+	push eax	;return the value back for consistancy
+	pushad
+	push eax	;the value to push to the C function
+	call init_multiboot
+	popad
+
+	call fault_handler
 
 	.kloop:
 	nop

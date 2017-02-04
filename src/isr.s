@@ -8,6 +8,8 @@
 [EXTERN idt_set_gate]
 [GLOBAL fill_isr]
 
+[GLOBAL fault_handler]
+
 [GLOBAL isr0]
 [GLOBAL isr1]
 [GLOBAL isr2]
@@ -469,4 +471,5 @@ fault_handler:
 
 	ret
 	.count:
+	cli
 	hlt

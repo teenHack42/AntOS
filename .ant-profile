@@ -3,6 +3,6 @@
 #BASE_DIR="."
 BASE_DIR="~/AntOS"
 
-alias ant="qemu-system-i386 -cdrom $BASE_DIR/AntOS.iso"
-alias sant="qemu-system-i386 -serial stdio -cdrom $BASE_DIR/AntOS.iso"
-alias cant="qemu-system-i386 -monitor stdio -cdrom $BASE_DIR/AntOS.iso"
+alias ant="qemu-system-i386 -cdrom $BASE_DIR/AntOS.iso -d guest_errors"
+alias sant="qemu-system-i386 -serial stdio -cdrom $BASE_DIR/AntOS.iso -d guest_errors"
+alias cant="qemu-system-i386 -monitor stdio -cdrom $BASE_DIR/AntOS.iso -d guest_errors"
