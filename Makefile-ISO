@@ -6,7 +6,7 @@ all:
 	@echo "[ISO] Copying Binarys to Grub Directory"
 	@mkdir -p $(BASE)/isodir/boot/grub
 	@cp $(BASE)/bin/$(BINNAME) $(BASE)/isodir/$(BINNAME)
-#	@cp $(BASE)/initrd/initrd.img       $(BASE)/isodir/initrd
+	@cp $(BASE)/initrd/initrd.img       $(BASE)/isodir/initrd
 	@cp $(BASE)/grub/grub.cfg $(BASE)/isodir/boot/grub/grub.cfg
 	@mkdir -p $(BASE)/logs
 	@echo "[ISO] Creating ISO"

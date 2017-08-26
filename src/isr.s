@@ -7,6 +7,7 @@
 [EXTERN short_hex]
 [EXTERN idt_set_gate]
 [GLOBAL fill_isr]
+[EXTERN p_stack]
 
 [GLOBAL fault_handler]
 
@@ -222,13 +223,13 @@ isr13:
 	cli
       ;pushes error code
       push byte 13
-      jmp isr_common_stub
+      jmp keyboard
 
 isr14:
 	cli
       ;pushes error code
       push byte 14
-      jmp isr_common_stub
+      jmp keyboard
 
 isr15: ;unassigned
 
@@ -247,15 +248,41 @@ isr17:
 isr18:
 	cli
       push byte 0
-      push byte 17
+      push byte 18
       jmp isr_common_stub
 
 isr19:
 	cli
       push byte 0
-      push byte 17
+      push byte 19
       jmp isr_common_stub
 
+
+kbdmsg db "Keyboard interupt called i think\n", 0
+
+keyboard:
+push ebp
+push eax
+push ebx
+push ecx
+push edx
+push esi
+push edi
+push ds
+	call p_stack
+	pop ds
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+
+	add esp, 8
+	sti
+	iretd
+	hlt
 
 isr_common_stub:
 	;pushad

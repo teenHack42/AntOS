@@ -5,6 +5,7 @@
 [GLOBAL put_char]
 [GLOBAL put_string]
 [GLOBAL put_stringf]
+[GLOBAL put_hexf]
 [GLOBAL text_attribute]
 [GLOBAL set_cursor]
 [GLOBAL to_hex]
@@ -207,21 +208,52 @@ put_stringf:
 	.put_string:
 	cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
 	je .end_of_string
+	cmp byte [eax], 0x0A
+	jne .not_nl
+	mov word [cursor_x], 0x0
+	mov edx, [cursor_y]
+	inc edx
+	mov [cursor_y], edx
+	jmp .skip_char
+	.not_nl:
 	mov ebx, [eax]			; move the character from memory into ebx
 	push eax				;save eax so we dont loose the pointer of the string
 	push bx				;send the character to the function put_char
 	call put_char
 	pop eax				;get the pointer from above back because put_char destoryed eax
-	cmp bx, '\n' 				;we need to skip the n in \n so we dont print it....
-	jne .not_newline
-	inc eax					;increment the pointer a second time(or first whatever but 2x...)
-	.not_newline:
+
+	.skip_char
 	inc eax					;increment the pntr to the next character
 	loop .put_string			;loop back until we hit a 0 character (end of string)
 	.end_of_string:
 
 	pop ebp
 	ret
+
+	put_hexf:
+		push ebp
+		mov ebp, esp
+
+		mov eax, [ebp+0x8]
+		call to_hex
+
+		.put_string:
+		cmp byte [eax], 0 		; check if it is an end of sting byte and jump to the end if it is
+		je .end_of_string
+		.not_nl:
+		mov ebx, [eax]			; move the character from memory into ebx
+		push eax				;save eax so we dont loose the pointer of the string
+		push bx				;send the character to the function put_char
+		call put_char
+		pop eax				;get the pointer from above back because put_char destoryed eax
+
+		.skip_char
+		inc eax					;increment the pntr to the next character
+		loop .put_string			;loop back until we hit a 0 character (end of string)
+		.end_of_string:
+
+		pop ebp
+		ret
 
 ; put_string: print a null terminated string to screen at current cursor
 ;				eax - pointer to the start of a null terminated string
