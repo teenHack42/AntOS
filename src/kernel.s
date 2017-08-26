@@ -2,6 +2,8 @@
 [SECTION .text]
 
 [GLOBAL ant_kernel_main]
+[EXTERN end]
+
 [EXTERN clear_screen]
 [EXTERN set_character]
 [EXTERN put_char]
@@ -34,6 +36,12 @@
 
 [EXTERN init_multiboot]
 
+[EXTERN init_mm]
+[EXTERN memset]
+
+[GLOBAL newline]
+
+newline dd '\n',0
 antos	dd	'AntOS\n', 0
 sleepstr dd	'This string was printed after 2000 ms\n', 0
 
@@ -52,12 +60,32 @@ ant_kernel_main:
 	mov ebx, 150	;Frequency of PIT
 	call init_pit
 
-	mov eax, 700
-	push eax
-	call sleep
+	;----------MM-----------
 
-	mov eax, sleepstr
+	call init_mm
+
+	push 0x1000				;end to end + 4K
+	push 0x42					;put this character in
+	push end					;start at end
+	call memset
+
+	mov eax, [esp+0x04]
+	call to_hex
 	call put_string
+
+	mov eax, [end]
+	call to_hex
+	call put_string
+
+	;----------MM-----------
+
+
+	;mov eax, 700
+	;push eax
+	;call sleep
+
+	;mov eax, sleepstr
+	;call put_string
 
 
 	;call fault_handler
