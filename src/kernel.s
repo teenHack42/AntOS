@@ -60,16 +60,16 @@ ant_kernel_main:
 	call put_string
 
 
-	call fault_handler
+	;call fault_handler
 
-	pop eax
-	push eax	;return the value back for consistancy
-	pushad
-	push eax	;the value to push to the C function
-	call init_multiboot
-	popad
+	;pop eax
+	;push eax	;return the value back for consistancy
+	;pushad
+	;push eax	;the value to push to the C function
+	;call init_multiboot
+	;popad
 
-	call fault_handler
+	;call fault_handler
 
 	.kloop:
 	nop

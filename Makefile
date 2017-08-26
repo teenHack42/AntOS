@@ -12,3 +12,6 @@ all:
 clean:
 	@echo "[*] Cleaning "
 	@make -C src clean
+
+qemu:
+	qemu-system-i386 -serial stdio -cdrom AntOS.iso
