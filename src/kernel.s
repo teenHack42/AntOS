@@ -58,29 +58,24 @@ ant_kernel_main:
 	mov ebx, 150	;Frequency of PIT
 	call init_pit
 
-	push printf_test_inc_string
-	push 0x42FEC442
-	push printf_test
-	call printf
+	mov eax, 700
+	push eax
+	call sleep
 
-	;mov eax, 700
-	;push eax
-	;call sleep
-
-	;mov eax, sleepstr
-	;call put_string
+	mov eax, sleepstr
+	call put_string
 
 
-	;call fault_handler
+	call fault_handler
 
-	;pop eax
-	;push eax	;return the value back for consistancy
-	;pushad
-	;push eax	;the value to push to the C function
-	;call init_multiboot
-	;popad
+	pop eax
+	push eax	;return the value back for consistancy
+	pushad
+	push eax	;the value to push to the C function
+	call init_multiboot
+	popad
 
-	;call fault_handler
+	call fault_handler
 
 	.kloop:
 	nop
