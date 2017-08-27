@@ -9,9 +9,10 @@
 
 [EXTERN end]
 [EXTERN code]
+[EXTERN printf]
 
-init_msg dd '[MM]     Initalising: ',0
-k_size_str dd '[MM] Kernel Size: ',0
+init_msg dd '[MM]     Initalising: \n',0
+k_size_str dd '[MM] Kernel Size: %X\n',0
 
 
 init_mm:
@@ -19,18 +20,14 @@ init_mm:
 	mov	ebp, esp
 	sub esp, 0						;no local variables... yet. this is not nescessary but im learning
 
-	mov eax, init_msg
-	call put_string
+	push init_msg
+	call printf
 
-	mov eax, newline
-	call put_string
-
-	mov eax, k_size_str
-	call put_string
 	mov eax, end		;find the size of the kernel in bytes. end of Kernel
 	sub eax, code		;minus the start of kernel
-	call to_hex
-	call put_string
+	push eax
+	push k_size_str
+	call printf
 
 	mov esp, ebp				; takedown stack frame
   pop ebp							; same as "leave" op

@@ -38,7 +38,11 @@
 
 [EXTERN printf]
 
+[EXTERN init_mm]
+[EXTERN memset]
+
 antos										dd	'AntOS\n', 0
+hex											dd	'%X\n',0
 sleepstr 								dd	"This string was printed after 2000 ms\n", 0
 
 
@@ -47,8 +51,8 @@ ant_kernel_main:
 	mov esp, 0x10F000
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
-	mov eax, antos
-	call put_string
+	push antos
+	call printf
 
 	call init_pic
 	call init_idt		;Interrupts
@@ -67,13 +71,13 @@ ant_kernel_main:
 	push end					;start at end
 	call memset
 
-	mov eax, [esp+0x04]
-	call to_hex
-	call put_string
+	push dword [esp+0x04]
+	push hex
+	call printf
 
-	mov eax, [end]
-	call to_hex
-	call put_string
+	push dword [end]
+	push hex
+	call printf
 
 	;----------MM-----------
 
