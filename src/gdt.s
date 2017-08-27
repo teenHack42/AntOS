@@ -66,39 +66,40 @@ fill_gdt:
 	mov edx, 0
 	call fill_gdt_sector
 
+	;Kernel code
 	mov eax, 0x0		;linear address from 0 - above the kernel
 	mov ebx, 0x400			;400 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear) TODO use the 'end' located in link.ld to calculate the size of the kernel
 	mov ecx, 0x0
 	or ecx, 0x9C			;data dpl0
-	mov edx, 1				;second
+	mov edx, 1				;second 0x08
 	call fill_gdt_sector
 
 	mov eax, 0x0		;linear address up to 0xc8000
 	mov ebx, 0x400			;400 * 4k Pages = 0 - 0x400000 or 4MB(1 page table linear)
 	mov ecx, 0x0
 	or ecx, 0x92				;data dpl0
-	mov edx, 2
+	mov edx, 2				;0x10
 	call fill_gdt_sector
 
 	mov eax, 0x04000000			;user code from 4MB - 1024MB
 	mov ebx, 0xf00000					;
 	mov ecx, 0x0
 	or ecx, 0xFE				;code dpl3
-	mov edx, 3
+	mov edx, 3					;0x18
 	call fill_gdt_sector
 
 	mov eax, 0x04000000			;user data from 4MB - 1024MB
 	mov ebx, 0xf00000					;
 	mov ecx, 0x0
 	or ecx, 0xF2				;data dpl3
-	mov edx, 4
+	mov edx, 4					;0x20
 	call fill_gdt_sector
 
 	mov eax, kernel_tss			;user data from 4MB - 1024MB
 	mov ebx, 0x1					;less than 4k in size
 	mov ecx, 0x0
 	or ecx, 0x89				;TSS
-	mov edx, 5
+	mov edx, 5					;0x28
 	call fill_gdt_sector
 	ret
 

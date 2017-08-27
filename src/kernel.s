@@ -34,11 +34,17 @@
 
 [EXTERN init_multiboot]
 
-antos	dd	'AntOS\n', 0
-sleepstr dd	'This string was printed after 2000 ms\n', 0
+[EXTERN printf]
+
+antos										dd	'AntOS\n', 0
+sleepstr 								dd	"This string was printed after 2000 ms\n", 0
+
+printf_test 						dd "This is a Capital Hex String 0x%X\nAnd this is a %s\n",0
+printf_test_inc_string 	dd 'String',0
 
 ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
+	mov esp, 0x10F000
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
 	mov eax, antos
@@ -52,24 +58,29 @@ ant_kernel_main:
 	mov ebx, 150	;Frequency of PIT
 	call init_pit
 
-	mov eax, 700
-	push eax
-	call sleep
+	push printf_test_inc_string
+	push 0x42FEC442
+	push printf_test
+	call printf
 
-	mov eax, sleepstr
-	call put_string
+	;mov eax, 700
+	;push eax
+	;call sleep
+
+	;mov eax, sleepstr
+	;call put_string
 
 
-	call fault_handler
+	;call fault_handler
 
-	pop eax
-	push eax	;return the value back for consistancy
-	pushad
-	push eax	;the value to push to the C function
-	call init_multiboot
-	popad
+	;pop eax
+	;push eax	;return the value back for consistancy
+	;pushad
+	;push eax	;the value to push to the C function
+	;call init_multiboot
+	;popad
 
-	call fault_handler
+	;call fault_handler
 
 	.kloop:
 	nop

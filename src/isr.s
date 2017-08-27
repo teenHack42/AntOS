@@ -258,14 +258,19 @@ isr19:
 
 
 isr_common_stub:
-	;pushad
-	push ebp
-	push eax
-	push ebx
-	push ecx
-	push edx
-	push esi
-	push edi
+	pushad
+	cld ;/* C code following the sysV ABI requires DF to be clear on function entry */
+	mov eax, init_isr_msg
+	;call put_serial
+	call fault_handler
+	popad
+	sti
+	iretd
+	sti
+	hlt
+
+
+	pushad
 	push ds
 
 	mov ax, 0x10
@@ -279,15 +284,7 @@ isr_common_stub:
 	call fault_handler
 
 	pop ds
-	pop edi
-	pop esi
-	pop edx
-	pop ecx
-	pop ebx
-	pop eax
-	pop ebp
-
-	add esp, 8		;get rid of the arguments from the orriginal call
+	popad
 
 	sti
 	iretd		   ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
@@ -458,7 +455,7 @@ fault_handler:
 	inc edx
 
 	inc ecx
-	cmp ecx, 0x20
+	cmp ecx, 0xFF
 	jle .loopf
 	.end_stack_dump:
 
