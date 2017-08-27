@@ -36,17 +36,15 @@
 
 [EXTERN init_multiboot]
 
-[EXTERN init_mm]
-[EXTERN memset]
+[EXTERN printf]
 
-[GLOBAL newline]
+antos										dd	'AntOS\n', 0
+sleepstr 								dd	"This string was printed after 2000 ms\n", 0
 
-newline dd '\n',0
-antos	dd	'AntOS\n', 0
-sleepstr dd	'This string was printed after 2000 ms\n', 0
 
 ant_kernel_main:
 	mov ebx, esp	;save the base of the stack
+	mov esp, 0x10F000
 	push eax			;always have this first as values from grub are pushed to the stack
 	call clear_screen
 	mov eax, antos

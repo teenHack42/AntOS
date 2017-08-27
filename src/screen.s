@@ -9,6 +9,7 @@
 [GLOBAL set_cursor]
 [GLOBAL to_hex]
 [GLOBAL short_hex]
+[GLOBAL cursor_y]
 
 screen_address	dd	0xB8000
 cursor_x 	dd	0x0
@@ -250,7 +251,7 @@ put_char:
 	pop eax 						;eip for ret
 	pop cx 						;my character
 	push eax 						;put eip back on the stack...
-	cmp cx, '\n' 					;check for newline character
+	cmp cx, "\n" 					;check for newline character
 	jne .not_new_line 					; jump if new line
 
 	mov word [cursor_x], 0x0

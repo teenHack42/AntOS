@@ -14,4 +14,7 @@ clean:
 	@make -C src clean
 
 qemu:
-	qemu-system-i386 -serial stdio -cdrom AntOS.iso
+	qemu-system-i386 -serial stdio -cdrom AntOS.iso -d guest_errors
+
+qemu-mon:
+	qemu-system-i386 -monitor stdio -cdrom AntOS.iso -d guest_errors
